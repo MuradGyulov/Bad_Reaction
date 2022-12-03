@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d7ae8dca6a2720c4fb216568b514c6cc, type: 3}
+  m_Name: ResourcesContainer
+  m_EditorClassIdentifier: 
+  playerMovementSpeed: 0.8
+  playerSpeedBoostValue: 0.06
+  delayBeforeOpenMainMenu: 2
+  buttonsSound: {fileID: 8300000, guid: df1c9541a2dda654cbff8c030962cadc, type: 3}
+  cristalSound: {fileID: 8300000, guid: df1c9541a2dda654cbff8c030962cadc, type: 3}
+  turningSound: {fileID: 8300000, guid: df1c9541a2dda654cbff8c030962cadc, type: 3}
+  crashSound: {fileID: 8300000, guid: df1c9541a2dda654cbff8c030962cadc, type: 3}
