@@ -1,11 +1,14 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+using YG;
 
 public class Player : MonoBehaviour
 {
-    public static UnityEvent<int, bool> PlayerEvent = new UnityEvent<int, bool> ();
+    public static Action GetScoreEvent;
+    public static Action PlayerDeadEvent;
 
     private Transform thisTransform;
     private SpriteRenderer spriteRenderer;
@@ -36,11 +39,9 @@ public class Player : MonoBehaviour
         defaultPosition = thisTransform.position;
         speedBoost = resources.PlayerSpeedBoostValue;
         delayMenu = resources.DelayBeforeOpenMainMenu;
-
-        Canvas.StartGameEvent.AddListener(StartGame);
     }
 
-    private void StartGame()
+    public void StartGame()
     {
         spriteRenderer.enabled = true;
         rigidBody2D.bodyType = RigidbodyType2D.Dynamic;
@@ -92,13 +93,13 @@ public class Player : MonoBehaviour
                 explosionParticles.Play();
                 movementDirection = Vector3.zero;
                 rigidBody2D.bodyType = RigidbodyType2D.Static;
-                gameStarted = false;
                 StartCoroutine(Delay());
+                gameStarted = false;
                 break;
             case "Cristal":
                 Cristal cristal = collision.gameObject.GetComponent<Cristal>();
                 cristal.GetCristal();
-                PlayerEvent.Invoke(1, false);
+                GetScoreEvent?.Invoke();
                 movementSpeed += speedBoost;
                 break;
         }
@@ -107,7 +108,7 @@ public class Player : MonoBehaviour
     private IEnumerator Delay()
     {
         yield return new WaitForSeconds(delayMenu);
+        PlayerDeadEvent?.Invoke();
         thisTransform.position = defaultPosition;
-        PlayerEvent.Invoke(0, true);
     }
 }
