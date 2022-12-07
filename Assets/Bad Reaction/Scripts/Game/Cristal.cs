@@ -1,4 +1,6 @@
+using Unity.VisualScripting;
 using UnityEngine;
+using YG;
 
 public class Cristal : MonoBehaviour
 {
@@ -10,6 +12,7 @@ public class Cristal : MonoBehaviour
     private Vector2 defaultPosition;
     private bool firstRelocate = true;
     private GameResources resources;
+    private int lastPointer;
 
 
     public void GetCristal()
@@ -25,14 +28,16 @@ public class Cristal : MonoBehaviour
         }
 
         animator.SetTrigger("Relocate");
-        audioSource.PlayOneShot(resources.CristalSound);
+
+        if (YandexGame.savesData.saved_SoundsON)
+        {
+            audioSource.PlayOneShot(resources.CristalSound);
+        }
     }
 
     public void ChangePosition()
     {
-        for(int i = 0; i < Random.Range(1, pointers.Length + 1); i++)
-        {
-            thisTransform.position = pointers[i].position;
-        }
+        thisTransform.position = pointers[Random.Range(0, 4)].position;
     }
 }
+ 

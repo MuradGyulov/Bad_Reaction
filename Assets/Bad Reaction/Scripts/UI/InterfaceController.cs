@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -14,17 +13,13 @@ public class InterfaceController:MonoBehaviour
     [SerializeField] private GameResources resources;
     [SerializeField] private AudioSource audioSource;
     [SerializeField] private Animator animator;
-
     [SerializeField] private Image soundsButton;
-
+    [Space(25)]
     [SerializeField] private Text scoreCounterText;
     [SerializeField] private Text lastResultText;
     [SerializeField] private Text bestResultText;
 
     private int currentScore;
-    private int lastScore;
-    private int bestScore;
-
     private Player player;
 
 
@@ -49,8 +44,7 @@ public class InterfaceController:MonoBehaviour
     {
         Singleton = this;
 
-        GameObject playerObject = GameObject.FindGameObjectWithTag("Player");
-        player = playerObject.GetComponent<Player>();
+        player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
 
         GetLoad();
     }
@@ -60,17 +54,32 @@ public class InterfaceController:MonoBehaviour
         if (YandexGame.savesData.saved_SoundsON)
         {
             audioSource.volume = 1;
-           // soundsButton.sprite = resources.Sounds_on;
+            soundsButton.sprite = resources.Sounds_on;
         }
         else
         {
             audioSource.volume = 0;
-            //soundsButton.sprite = resources.Sounds_off;
+            soundsButton.sprite = resources.Sounds_off;
         }
     }
 
+    private void PlayerDead()
+    {
+        animator.SetTrigger("MainMenuShow");
+        lastResultText.text = currentScore.ToString();
 
-
+        if (currentScore > YandexGame.savesData.bestSavedResult)
+        {
+            bestResultText.text = "BEST " + currentScore.ToString();
+            if (YandexGame.savesData.saved_SoundsON) { audioSource.PlayOneShot(resources.NewBesResult); }
+            YandexGame.savesData.bestSavedResult = currentScore;
+            YandexGame.SaveProgress();
+        }
+        else
+        {
+            bestResultText.text = "BEST " + YandexGame.savesData.bestSavedResult;
+        }
+    }
 
     #region START MENU FUNCTIONS
     public void btn_Start()
@@ -82,20 +91,6 @@ public class InterfaceController:MonoBehaviour
     #endregion
 
     #region MAIN MENU FUNCTIONS 
-    private void PlayerDead()
-    {
-        animator.SetTrigger("MainMenuShow");
-
-        lastResultText.text = currentScore.ToString();
-
-        if(currentScore >= YandexGame.savesData.bestSavedResult)
-        {
-            bestResultText.text = "BEST " + currentScore.ToString();
-            YandexGame.savesData.bestSavedResult = currentScore;
-            YandexGame.SaveProgress();
-        }
-    }
-
     public void btn_Restar()
     {
         currentScore = 0;
@@ -128,6 +123,11 @@ public class InterfaceController:MonoBehaviour
 
         audioSource.PlayOneShot(resources.ButtonSound);
         YandexGame.SaveProgress();
+    }
+
+    public void ButtonSound()
+    {
+        audioSource.PlayOneShot(resources.ButtonSound);
     }
     #endregion
 

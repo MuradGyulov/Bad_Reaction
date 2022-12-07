@@ -16,14 +16,18 @@ public class GameResources : ScriptableObject
     [SerializeField] private AudioClip buttonsSound;
     [SerializeField] private AudioClip cristalSound;
     [SerializeField] private AudioClip turningSound;
+    [SerializeField] private AudioClip newBestResult;
     [SerializeField] private AudioClip crashSound;
     [Space(20)]
     [SerializeField] private Sprite sounds_off;
     [SerializeField] private Sprite sounds_on;
 
 
-    public AudioClip CristalSound { get => cristalSound; }
     public AudioClip ButtonSound { get => buttonsSound; }
+    public AudioClip CristalSound { get => cristalSound; }
+    public AudioClip TurningSound { get => turningSound; }
+    public AudioClip NewBesResult { get => newBestResult; }
+    public AudioClip CrashSound { get => crashSound; }
 
     public float PlayerMovementSpeed { get => playerMovementSpeed; }
     public float PlayerSpeedBoostValue { get => playerSpeedBoostValue; }

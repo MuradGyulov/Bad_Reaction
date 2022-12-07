@@ -1,9 +1,10 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
+using System.Security.Cryptography;
 using UnityEngine;
-using UnityEngine.Events;
+using UnityEngine.Timeline;
 using YG;
+using Random = UnityEngine.Random;
 
 public class Player : MonoBehaviour
 {
@@ -11,76 +12,65 @@ public class Player : MonoBehaviour
     public static Action PlayerDeadEvent;
 
     private Transform thisTransform;
-    private SpriteRenderer spriteRenderer;
-    private Rigidbody2D rigidBody2D;
     private AudioSource audioSource;
     private GameResources resources;
-    private ParticleSystem explosionParticles;
+    private SpriteRenderer spriteRenderer;
     private ParticleSystem trailParticles;
+    private ParticleSystem explosionParticles;
 
-    private int touchCounter;
     private bool gameStarted;
     private float speedBoost;
     private float delayMenu;
     private float movementSpeed;
+
     private Vector3 defaultPosition;
-    private Vector3 movementDirection;
+    private Quaternion defaultRotationAngles;
+
 
     private void Start()
     {
         thisTransform = GetComponent<Transform>();
-        spriteRenderer = GetComponent<SpriteRenderer>();
-        rigidBody2D = GetComponent<Rigidbody2D>();
         audioSource = GetComponent<AudioSource>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
         resources = Resources.Load<GameResources>("ResourcesContainer");
-        explosionParticles = thisTransform.Find("ExplosionParticles").gameObject.GetComponent<ParticleSystem>();
         trailParticles = thisTransform.Find("TrailParticles").gameObject.GetComponent<ParticleSystem>();
+        explosionParticles = thisTransform.Find("ExplosionParticles").gameObject.GetComponent<ParticleSystem>();
 
         defaultPosition = thisTransform.position;
+        defaultRotationAngles.eulerAngles = thisTransform.eulerAngles;
         speedBoost = resources.PlayerSpeedBoostValue;
         delayMenu = resources.DelayBeforeOpenMainMenu;
     }
 
     public void StartGame()
     {
-        spriteRenderer.enabled = true;
-        rigidBody2D.bodyType = RigidbodyType2D.Dynamic;
+        if (YandexGame.savesData.saved_SoundsON)
+        {
+            audioSource.volume = 1;
+        }
+        else
+        {
+            audioSource.volume = 0;
+        }
+
         movementSpeed = resources.PlayerMovementSpeed;
-        movementDirection = thisTransform.up * movementSpeed;
-        touchCounter = 1;
+        spriteRenderer.enabled = true;
         trailParticles.Play();
         gameStarted = true;
     }
 
     private void Update()
     {
-        if(Input.GetMouseButtonDown(0) && gameStarted)
+        if (gameStarted)
         {
-            touchCounter++;
-
-            switch (touchCounter)
+            if (Input.GetMouseButtonDown(0))
             {
-                case 1:
-                    movementDirection = thisTransform.up * movementSpeed;
-                    break;
-                case 2:
-                    movementDirection = thisTransform.right * movementSpeed;
-                    break;
-                case 3:
-                    movementDirection = thisTransform.up * -movementSpeed;
-                    break;
-                case 4:
-                    movementDirection = thisTransform.right * -movementSpeed;
-                    break;
+                audioSource.PlayOneShot(resources.TurningSound);
+                thisTransform.Rotate(0, 0, -90f);
             }
 
-            if(touchCounter >= 4) { touchCounter = 0; }
+            thisTransform.Translate(movementSpeed * Vector2.up * Time.deltaTime);
         }
-    }
-
-    private void FixedUpdate()
-    {
-        if (gameStarted) { rigidBody2D.velocity = movementDirection; }
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -88,19 +78,23 @@ public class Player : MonoBehaviour
         switch (collision.gameObject.tag)
         {
             case "Wall":
+                if (YandexGame.savesData.saved_SoundsON) { audioSource.PlayOneShot(resources.CrashSound); }
                 spriteRenderer.enabled = false;
-                trailParticles.Stop();
                 explosionParticles.Play();
-                movementDirection = Vector3.zero;
-                rigidBody2D.bodyType = RigidbodyType2D.Static;
+                trailParticles.Stop();  
                 StartCoroutine(Delay());
                 gameStarted = false;
                 break;
             case "Cristal":
                 Cristal cristal = collision.gameObject.GetComponent<Cristal>();
-                cristal.GetCristal();
                 GetScoreEvent?.Invoke();
+                cristal.GetCristal();
                 movementSpeed += speedBoost;
+
+                if(Random.Range(0, 100) <= 60)
+                {
+                    thisTransform.Rotate(0, 180f, 180f);
+                }
                 break;
         }
     }
@@ -108,7 +102,9 @@ public class Player : MonoBehaviour
     private IEnumerator Delay()
     {
         yield return new WaitForSeconds(delayMenu);
-        PlayerDeadEvent?.Invoke();
         thisTransform.position = defaultPosition;
+        PlayerDeadEvent?.Invoke();
+        thisTransform.eulerAngles = Vector3.zero;
+        thisTransform.eulerAngles = defaultRotationAngles.eulerAngles;
     }
 }
