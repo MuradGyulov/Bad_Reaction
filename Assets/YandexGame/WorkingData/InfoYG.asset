@@ -12,12 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: efa747916aa66674d96ea40ca8a480b2, type: 3}
   m_Name: InfoYG
   m_EditorClassIdentifier: 
-  scopes: 1
+  scopes: 0
   playerPhotoSize: 0
-  fullscreenAdChallenge: 0
-  leaderboardEnable: 1
-  sitelock: 0
-  LocalizationEnable: 1
+  leaderboardEnable: 0
+  saveCloud: 1
+  flushSave: 0
+  saveCloudInterval: 5
+  fullscreenAdChallenge: 1
+  fullscreenAdInterval: 60
+  durationOfAdSimulation: 0.5
+  LocalizationEnable: 0
   callingLanguageCheck: 0
   translateMethod: 0
   domainAutoLocalization: com
@@ -109,8 +113,7 @@ MonoBehaviour:
     it: 
     de: 
     hi: 
-  SDKStartDelay: 0
-  fullscreenAdInterval: 60
-  durationOfAdSimulation: 0.5
+  debug: 0
   staticRBTInGame: 0
-  debug: 1
+  sitelock: 0
+  SDKStartDelay: 0
